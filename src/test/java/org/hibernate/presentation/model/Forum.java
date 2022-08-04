@@ -1,14 +1,13 @@
 package org.hibernate.presentation.model;
 
 import java.time.Instant;
+import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-/**
- * @author Steve Ebersole
- */
 @Entity
 @Table( name = "forums" )
 public class Forum {
@@ -16,6 +15,8 @@ public class Forum {
 	private Integer id;
 	private String name;
 	private Instant created;
+	@OneToMany(mappedBy = "forum")
+	private Set<Post> posts;
 
 	protected Forum() {
 	}

@@ -45,17 +45,17 @@ public class YearMonthCompositeUserType implements CompositeUserType<YearMonth> 
 	}
 
 	@Override
-	public boolean equals(Object x, Object y) {
+	public boolean equals(YearMonth x, YearMonth y) {
 		return Objects.equals( x, y );
 	}
 
 	@Override
-	public int hashCode(Object x) {
+	public int hashCode(YearMonth x) {
 		return Objects.hashCode( x );
 	}
 
 	@Override
-	public Object deepCopy(Object value) {
+	public YearMonth deepCopy(YearMonth value) {
 		return value;
 	}
 
@@ -65,17 +65,17 @@ public class YearMonthCompositeUserType implements CompositeUserType<YearMonth> 
 	}
 
 	@Override
-	public Serializable disassemble(Object value) {
-		return (Serializable) value;
+	public Serializable disassemble(YearMonth value) {
+		return value;
 	}
 
 	@Override
-	public Object assemble(Serializable cached, Object owner) {
-		return cached;
+	public YearMonth assemble(Serializable cached, Object owner) {
+		return (YearMonth) cached;
 	}
 
 	@Override
-	public Object replace(Object detached, Object managed, Object owner) {
+	public YearMonth replace(YearMonth detached, YearMonth managed, Object owner) {
 		return managed;
 	}
 }

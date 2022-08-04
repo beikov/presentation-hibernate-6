@@ -1,11 +1,9 @@
 package org.hibernate.presentation.query;
 
-import java.util.List;
-
+import jakarta.persistence.Tuple;
 import org.hibernate.presentation.model.Forum;
 import org.hibernate.presentation.model.Post;
 import org.hibernate.query.SelectionQuery;
-
 import org.hibernate.testing.orm.junit.DomainModel;
 import org.hibernate.testing.orm.junit.SessionFactory;
 import org.hibernate.testing.orm.junit.SessionFactoryScope;
@@ -13,26 +11,34 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Demonstrate some query features
+ * Demonstrate from clause subquery and lateral joins
  */
 @DomainModel( annotatedClasses = { Forum.class, Post.class } )
 @SessionFactory
-public class QueryExampleTest {
+public class FromClauseSubqueryExampleTest {
 	@Test
-	public void demonstrateMultipleQueryRoot(SessionFactoryScope scope) {
+	public void showFirstPostPerForum(SessionFactoryScope scope) {
 		scope.inTransaction( (session) -> {
-			final SelectionQuery<String> query = session.createSelectionQuery(
-				"(select p.title from Post p where p.title ilike '%!' " +
-					"union all " +
-					"select f.name from Forum f) order by 1 limit 1",
-				String.class
+			final SelectionQuery<Tuple> query = session.createSelectionQuery(
+				"select f.name, firstPost.postTitle " +
+					"from Forum f " +
+					"left join lateral (" +
+						"select post.title as postTitle " +
+						"from f.posts post " +
+						"order by post.id " +
+						"limit 1" +
+					") firstPost",
+				Tuple.class
 			);
-			final List<String> results = query.list();
+			final List<Tuple> results = query.list();
 			assertThat( results ).hasSize( 1 );
-			assertThat( results.get( 0 ) ).isEqualTo( "first forum" );
+			assertThat( results.get( 0 ).get( 0 ) ).isEqualTo( "first forum" );
+			assertThat( results.get( 0 ).get( 1 ) ).isEqualTo( "Welcome!" );
 		} );
 	}
 
